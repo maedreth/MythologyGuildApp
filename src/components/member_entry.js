@@ -6,8 +6,18 @@ export default class MemberEntry extends Component {
         super(props);
 
         this.state = {
-            ilvl: null
+            ilvl: null,
+            timeStamp: ""
         };
+    }
+
+    formatTimestamp(timestamp) {
+        const date = new Date(timestamp);
+        const options = {  
+            year: "numeric", month: "short",  
+            day: "numeric", hour: "2-digit", minute: "2-digit"  
+        };
+        return date.toLocaleDateString("en-US", options);
     }
 
     fetchMemberGearscore (name) {
@@ -16,12 +26,14 @@ export default class MemberEntry extends Component {
             .then(response => {
                 console.log("axios res", response);
                 this.setState({
-                    ilvl: response.data.items.averageItemLevel
+                    ilvl: response.data.items.averageItemLevelEquipped,
+                    timeStamp: response.data.lastModified
                 });
             })
             .catch((error) => {
                 this.setState({
-                    ilvl: "Not found"
+                    ilvl: "Not found",
+                    timeStamp: "Not found"
                 });
             });
     }
@@ -30,12 +42,21 @@ export default class MemberEntry extends Component {
         this.fetchMemberGearscore(this.props.toon.name);
     }
 
+    shouldComponentUpdate(nextProps, nextState) {
+        if (nextState.timeStamp > this.state.timeStamp) {
+            return true;
+        } else {
+            console.log(this.props.toon.name, "is up to date");
+            return false;
+        }
+    }
+
     render() {
         return (
             <tr >
                 <td>{this.props.toon.name}</td>
                 <td>{this.state.ilvl}</td>
-                <td></td>
+                <td>{this.formatTimestamp(this.state.timeStamp)}</td>
             </tr>
         );
     }

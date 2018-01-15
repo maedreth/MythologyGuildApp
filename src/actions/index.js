@@ -6,7 +6,7 @@ export function fetchToons() {
     const guildRosterPromise = axios.get(url).then((response) => {
         return response.data.members.map((member) => {
             // let gearScore = fetchMemberGearscore(member.character.name);
-            return { name: member.character.name, ilvl: null };
+            return { name: member.character.name };
         });
     });
     console.log("guildRosterPromise", guildRosterPromise);
